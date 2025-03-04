@@ -1,11 +1,23 @@
 import { Resend } from 'resend';
 import WaitlistConfirmationEmail from '../emails/waitlist-confirmation';
 
+// Helper function for structured logging
+function logInfo(message: string, data?: any) {
+  console.log(`[Email Service] ${message}`, data ? data : '');
+}
+
+function logError(message: string, error: any) {
+  console.error(`[Email Service ERROR] ${message}`, error);
+}
+
 // Initialize Resend with API key
 const resendApiKey = process.env.RESEND_API_KEY;
 if (!resendApiKey) {
-  console.error('RESEND_API_KEY is not defined in environment variables');
+  logError('RESEND_API_KEY is not defined in environment variables', null);
+} else {
+  logInfo('Resend API key configured', { keyLength: resendApiKey.length, keyPrefix: resendApiKey.substring(0, 3) });
 }
+
 const resend = new Resend(resendApiKey || '');
 
 /**
@@ -24,38 +36,63 @@ export async function sendWaitlistConfirmationEmail({
   referralCode: string;
   referralCount?: number;
 }) {
+  const emailId = crypto.randomUUID();
+  const startTime = Date.now();
+  logInfo(`Preparing to send waitlist confirmation email [${emailId}]`, { email, position });
+  
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://speechbuddy.app';
   const referralUrl = `${baseUrl}/waitlist?ref=${referralCode}`;
+  
+  logInfo(`Using base URL: ${baseUrl} [${emailId}]`);
 
   try {
     if (!resendApiKey) {
-      console.warn('Skipping email send - RESEND_API_KEY not configured');
-      return { success: false, error: 'Email service not configured' };
+      logError(`Skipping email send - RESEND_API_KEY not configured [${emailId}]`, null);
+      return { success: false, error: 'Email service not configured', emailId };
     }
 
+    logInfo(`Rendering email template [${emailId}]`, { 
+      template: 'WaitlistConfirmationEmail',
+      recipient: email,
+      referralUrl
+    });
+    
+    const emailProps = {
+      name,
+      position,
+      referralCode,
+      referralCount,
+      referralUrl,
+    };
+    
+    logInfo(`Sending email via Resend [${emailId}]`);
     const { data, error } = await resend.emails.send({
       from: 'SpeechBuddy <waitlist@speechbuddy.app>',
       to: email,
       subject: `You're on the SpeechBuddy waitlist! Position #${position}`,
-      react: WaitlistConfirmationEmail({
-        name,
-        position,
-        referralCode,
-        referralCount,
-        referralUrl,
-      }),
+      react: WaitlistConfirmationEmail(emailProps),
     });
 
     if (error) {
-      console.error('Failed to send email:', error);
-      throw new Error(`Failed to send email: ${error.message}`);
+      logError(`Failed to send email [${emailId}]: ${error.message}`, { 
+        error: JSON.stringify(error)
+      });
+      return { success: false, error: `Failed to send email: ${error.message}`, emailId };
     }
 
-    return { success: true, messageId: data?.id };
+    const responseTime = Date.now() - startTime;
+    logInfo(`Email sent successfully [${emailId}] in ${responseTime}ms`, { messageId: data?.id });
+    return { success: true, messageId: data?.id, emailId };
   } catch (error) {
-    console.error('Error sending email:', error);
-    // Return error instead of throwing to prevent API route failure
-    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logError(`Error sending email [${emailId}]: ${errorMessage}`, { 
+      stack: error instanceof Error ? error.stack : undefined
+    });
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error',
+      emailId
+    };
   }
 }
 
@@ -63,5 +100,7 @@ export async function sendWaitlistConfirmationEmail({
  * Generate a random 6-digit verification code
  */
 export function generateVerificationCode(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  logInfo(`Generated verification code`, { codeLength: code.length });
+  return code;
 } 
