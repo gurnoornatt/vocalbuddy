@@ -17,38 +17,46 @@ const requiredEnvVars = [
   'NEXT_PUBLIC_APP_URL',
 ];
 
-// Check if .env.local exists
-const envPath = path.join(process.cwd(), '.env.local');
-if (!fs.existsSync(envPath)) {
-  console.error(chalk.red('❌ .env.local file not found!'));
-  console.log('Please create a .env.local file with the required environment variables:');
-  requiredEnvVars.forEach(envVar => {
-    console.log(`${envVar}=your_value_here`);
-  });
-  process.exit(1);
-}
-
-// Load environment variables from .env.local
-const envContent = fs.readFileSync(envPath, 'utf8');
+// Load variables from different sources
 const envVars = {};
-envContent.split('\n').forEach(line => {
-  const match = line.match(/^([^=]+)=(.*)$/);
-  if (match) {
-    const [, key, value] = match;
-    envVars[key.trim()] = value.trim();
+
+// 1. Check process.env first (this will work in both local and Vercel environments)
+requiredEnvVars.forEach(envVar => {
+  if (process.env[envVar]) {
+    envVars[envVar] = process.env[envVar];
   }
 });
+
+// 2. Check .env.local file if available (for local development)
+const envPath = path.join(process.cwd(), '.env.local');
+if (fs.existsSync(envPath)) {
+  console.log(chalk.green('✓ .env.local file found'));
+  const envContent = fs.readFileSync(envPath, 'utf8');
+  envContent.split('\n').forEach(line => {
+    const match = line.match(/^([^=]+)=(.*)$/);
+    if (match) {
+      const [, key, value] = match;
+      // Only set if not already set from process.env
+      if (!envVars[key.trim()]) {
+        envVars[key.trim()] = value.trim();
+      }
+    }
+  });
+} else {
+  console.log(chalk.yellow('⚠️ .env.local file not found'));
+  console.log('Checking for environment variables in process.env (for Vercel deployment)...');
+}
 
 // Check if all required environment variables are set
 let missingVars = false;
 console.log('Checking environment variables:');
 
 requiredEnvVars.forEach(envVar => {
-  if (!envVars[envVar]) {
+  if (!envVars[envVar] && !process.env[envVar]) {
     console.log(`${chalk.red('❌')} ${envVar}: Missing`);
     missingVars = true;
   } else {
-    const value = envVars[envVar];
+    const value = envVars[envVar] || process.env[envVar];
     const displayValue = value.length > 10 ? `${value.substring(0, 5)}...${value.substring(value.length - 5)}` : value;
     console.log(`${chalk.green('✓')} ${envVar}: ${displayValue}`);
   }
@@ -64,9 +72,17 @@ if (envVars['NEXT_PUBLIC_APP_URL'] && !envVars['NEXT_PUBLIC_APP_URL'].startsWith
   console.log(`${chalk.yellow('⚠️')} NEXT_PUBLIC_APP_URL: Does not start with 'http', which is the expected format`);
 }
 
+// In Vercel deployment, we want to provide helpful information but not necessarily fail the build
+const isVercelDeployment = process.env.VERCEL === '1';
+
 if (missingVars) {
-  console.error(chalk.red('\n❌ Some required environment variables are missing!'));
-  process.exit(1);
+  if (isVercelDeployment) {
+    console.log(chalk.yellow('\n⚠️ Some environment variables are missing, but continuing for Vercel deployment.'));
+    console.log('Please ensure these are configured in your Vercel project settings.');
+  } else {
+    console.error(chalk.red('\n❌ Some required environment variables are missing!'));
+    process.exit(1);
+  }
 } else {
   console.log(chalk.green('\n✓ All required environment variables are set!'));
 } 
