@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Lock } from "lucide-react"
+import { Lock, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { DotLottieReact } from '@lottiefiles/dotlottie-react'
@@ -170,6 +170,14 @@ export default function AuthScreen({ onStart }: AuthScreenProps) {
         <Link href="/parent">
           <Lock className="w-4 h-4" />
           Parent Mode
+        </Link>
+      </Button>
+
+      {/* Waitlist Button */}
+      <Button variant="outline" size="sm" className="absolute bottom-4 left-1/2 -translate-x-1/2 text-purple-600 border-purple-300 hover:bg-purple-50 gap-2" asChild>
+        <Link href="/waitlist">
+          <Users className="w-4 h-4" />
+          Join the Waitlist
         </Link>
       </Button>
     </div>

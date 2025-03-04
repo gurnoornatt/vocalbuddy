@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SpeechBuddy
+
+SpeechBuddy is an interactive speech learning companion for children, designed to help improve speech and communication skills in a fun and engaging way.
+
+## Features
+
+- Interactive tiger buddy that responds to speech
+- Speech recognition and synthesis
+- Reward system with stars and XP
+- Customizable settings for different learning needs
+- Waitlist system with referral program
+
+## Waitlist System
+
+The application includes a comprehensive waitlist system:
+
+- Users can join the waitlist with their email
+- Each user gets a unique referral code
+- Users can share their referral link to invite others
+- For every 3 successful referrals, users move up 100 positions in the waitlist
+- Email notifications are sent when users join the waitlist
+- Admin dashboard to manage and monitor the waitlist
+
+## Tech Stack
+
+- Next.js 14 with App Router
+- TypeScript
+- Tailwind CSS
+- Framer Motion for animations
+- Supabase for authentication and database
+- Web Speech API for speech recognition and synthesis
+- Lottie animations
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository
+2. Install dependencies with `npm install`
+3. Copy `.env.example` to `.env.local` and update with your values:
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+   RESEND_API_KEY=your-resend-api-key
+   NEXT_PUBLIC_APP_URL=your-app-url
+   ```
+4. Run the environment check with `npm run check-env`
+5. Run the development server with `npm run dev`
+6. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Database Setup
+
+The application requires the following tables in Supabase:
+
+- `users`: For user authentication and profiles
+- `waitlist`: For managing the waitlist entries
+- `email_verifications`: For email verification codes
+
+Run the migration script in `supabase/migrations/` to set up the required tables and functions.
+
+## Troubleshooting
+
+### Email Service
+
+If you encounter issues with email sending:
+
+1. Verify your Resend API key is correctly set in `.env.local`
+2. Ensure the API key starts with `re_`
+3. Check the debug endpoint at `/api/debug` (development only)
+4. Look for error messages in the server logs
+
+### Database Connection
+
+If you have issues connecting to Supabase:
+
+1. Verify your Supabase URL and anon key in `.env.local`
+2. Check if your IP is allowed in Supabase dashboard
+3. Ensure the required tables exist in your database
+4. Run the migration scripts if needed
+
+### Debugging
+
+In development mode, you can use the debug endpoint to check your configuration:
+
+```
+GET /api/debug
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This will return information about your environment variables and database connection.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## License
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[MIT](LICENSE)
