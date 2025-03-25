@@ -10,6 +10,18 @@
     "NEXT_PUBLIC_APP_URL": "https://testvocal.vercel.app",
     "RESEND_API_KEY": "re_HUVAygwV_6TBLj9kkmJ54Zk2DNEby1Quk"
   },
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
   "github": {
     "enabled": true,
     "silent": true
