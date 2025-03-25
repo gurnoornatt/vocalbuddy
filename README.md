@@ -8,18 +8,6 @@ SpeechBuddy is an interactive speech learning companion for children, designed t
 - Speech recognition and synthesis
 - Reward system with stars and XP
 - Customizable settings for different learning needs
-- Waitlist system with referral program
-
-## Waitlist System
-
-The application includes a comprehensive waitlist system:
-
-- Users can join the waitlist with their email
-- Each user gets a unique referral code
-- Users can share their referral link to invite others
-- For every 3 successful referrals, users move up 100 positions in the waitlist
-- Email notifications are sent when users join the waitlist
-- Admin dashboard to manage and monitor the waitlist
 
 ## Tech Stack
 
@@ -51,7 +39,6 @@ The application includes a comprehensive waitlist system:
 The application requires the following tables in Supabase:
 
 - `users`: For user authentication and profiles
-- `waitlist`: For managing the waitlist entries
 - `email_verifications`: For email verification codes
 
 Run the migration script in `supabase/migrations/` to set up the required tables and functions.

@@ -24,19 +24,19 @@ export async function GET(request: NextRequest) {
     
     // Test Supabase connection without exposing sensitive data
     let supabaseStatus = 'unknown';
-    let waitlistCount = null;
+    let userCount = null;
     
     try {
       // Try a simple query to test the connection
       const { count, error } = await supabase
-        .from('waitlist')
+        .from('users')
         .select('*', { count: 'exact', head: true });
         
       if (error) {
         supabaseStatus = `Error: ${error.message}`;
       } else {
         supabaseStatus = 'Connected';
-        waitlistCount = count;
+        userCount = count;
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
       request: requestInfo,
       database: {
         status: supabaseStatus,
-        waitlistCount,
+        userCount,
       },
     };
     

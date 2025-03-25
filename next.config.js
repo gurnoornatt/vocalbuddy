@@ -46,16 +46,6 @@ const nextConfig = {
       },
     ];
   },
-  // Configure redirects for the waitlist referral system
-  async redirects() {
-    return [
-      {
-        source: '/waitlist/:code',
-        destination: '/waitlist?ref=:code',
-        permanent: true,
-      },
-    ];
-  },
   // Configure webpack to handle environment variable issues during build
   webpack(config, { isServer, dev }) {
     // Add plugin to handle build-time issues

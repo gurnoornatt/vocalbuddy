@@ -56,13 +56,13 @@ export async function GET(request: NextRequest) {
     logInfo(`Testing Supabase connection`, { requestId });
     let supabaseStatus = 'Unknown';
     let dbVersion = null;
-    let waitlistCount = 0;
+    let userCount = 0;
     let tablesInfo: TableInfo[] = [];
     
     try {
-      // Check connection by counting waitlist entries
+      // Check connection by counting users
       const { count, error: countError } = await supabase
-        .from('waitlist')
+        .from('users')
         .select('*', { count: 'exact', head: true });
       
       if (countError) {
@@ -73,8 +73,8 @@ export async function GET(request: NextRequest) {
         });
       } else {
         supabaseStatus = 'Connected';
-        waitlistCount = count || 0;
-        logInfo(`Supabase connected successfully. Waitlist count: ${waitlistCount}`, { requestId });
+        userCount = count || 0;
+        logInfo(`Supabase connected successfully. User count: ${userCount}`, { requestId });
       }
       
       // Get PostgreSQL version
@@ -127,7 +127,7 @@ export async function GET(request: NextRequest) {
       supabase: {
         status: supabaseStatus,
         dbVersion,
-        waitlistCount,
+        userCount,
         tables: tablesInfo,
       },
       request: {
