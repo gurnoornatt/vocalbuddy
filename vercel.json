@@ -1,29 +1,13 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "framework": "nextjs",
-  "regions": ["iad1"],
   "env": {
     "NEXT_PUBLIC_SUPABASE_URL": "https://mauqfgieggfrpyossbvn.supabase.co",
     "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hdXFmZ2llZ2dmcnB5b3NzYnZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEwNDg1OTYsImV4cCI6MjA1NjYyNDU5Nn0.6dV0DMuw9lVISchfxVuuHL1Uds0-hud65TCvb1wqbRY",
     "NEXT_PUBLIC_APP_URL": "https://testvocal.vercel.app",
     "RESEND_API_KEY": "re_HUVAygwV_6TBLj9kkmJ54Zk2DNEby1Quk"
   },
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
-  ],
   "github": {
     "enabled": true,
     "silent": true
   }
-} 
+}
