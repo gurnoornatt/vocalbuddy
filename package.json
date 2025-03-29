@@ -6,10 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "check-env": "node scripts/check-env.js",
-    "predev": "npm run check-env",
-    "prebuild": "npm run check-env"
+    "lint": "next lint"
   },
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.13.0",
